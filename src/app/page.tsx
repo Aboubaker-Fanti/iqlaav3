@@ -355,70 +355,95 @@ const QuestionPage = ({
 );
 
 // Phone Number Input comp
-const PhoneInputPage = ({ onNext, phoneNumber, setPhoneNumber }: { 
-  onNext: () => void; 
-  phoneNumber: string; 
-  setPhoneNumber: (phone: string) => void; 
+const PhoneInputPage = ({
+  onNext,
+  phoneNumber,
+  setPhoneNumber,
+}: {
+  onNext: () => void;
+  phoneNumber: string;
+  setPhoneNumber: (phone: string) => void;
 }) => {
   const [showSkipMessage, setShowSkipMessage] = useState(false);
 
+const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const input = e.target.value;
+
+  const prefix = "+212 ";
+  const numbersOnly = input.replace(/\D/g, ""); // remove non-digits
+  let localPart = numbersOnly.startsWith("212") ? numbersOnly.slice(3) : numbersOnly;
+
+  if (localPart.startsWith("0")) localPart = localPart.slice(1);
+
+  localPart = localPart.slice(0, 9);
+
+  setPhoneNumber(prefix + localPart);
+};
+
+const isValidMoroccan = /^\+212\s[5-7][0-9]{8}$/.test(phoneNumber);
+
   return (
     <div className="min-h-screen w-full bg-[#1E2939] text-white flex items-center justify-center p-4">
-      <div className="w-full flex  flex-col justify-center items-center">
+      <div className="w-full flex flex-col justify-center items-center">
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center">
             <div className="relative">
-                <Image 
-                src="/images/iqlaa logo.svg" 
-                alt="Example Image" 
-                width={300} 
+              <Image
+                src="/images/iqlaa logo.svg"
+                alt="Example Image"
+                width={300}
                 height={200}
-                />
+              />
             </div>
           </div>
         </div>
 
-        <div className="text-center  w-full mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl  font-bold mb-6 leading-relaxed">
-            آخر حاجة، بغيتي تجرب أحسن<br />
+        <div className="text-center w-full mb-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl font-bold mb-6 leading-relaxed">
+            آخر حاجة، بغيتي تجرب أحسن
+            <br />
             طريقة للتعافي ف 90 يوم؟
           </h1>
-          <p className="text-gray-300 mb-4 text-[19px] sm:text-2xl lg:text-2xl 2xl:text-2xl  leading-relaxed" >
+          <p className="text-gray-300 mb-4 text-[19px] sm:text-2xl lg:text-2xl 2xl:text-2xl leading-relaxed">
             خدامين على استراتيجية جديدة باش نعاونو الناس يقلعو على التدخين.
           </p>
-          <p className="text-gray-300 mb-8 text-[19px] sm:text-2xl lg:text-2xl 2xl:text-2xl  leading-relaxed">
+          <p className="text-gray-300 mb-8 text-[19px] sm:text-2xl lg:text-2xl 2xl:text-2xl leading-relaxed">
             إلى بغيتي تكون من الولين لي يجربوها، دخل نمرة تليفونك وسجل ف الويتليست.
           </p>
         </div>
 
-        <div className=" max-w-md text-center w-full mb-8">
+        <div className="max-w-md text-center w-full mb-8">
           <label className="block text-right mb-4 text-gray-300">
             دخل رقم تليفونك
           </label>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="+212 6xx-xxxxxx"
-            className="w-full p-4 rounded-lg bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 focus:outline-none text-center text-lg"
-            dir="ltr"
-          />
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={handlePhoneChange}
+              placeholder="+212 6xx-xxxxxx"
+              className="w-full p-4 rounded-lg bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 focus:outline-none text-center text-lg"
+              dir="ltr"
+            />
+            {!isValidMoroccan && phoneNumber.length > 4 && (
+            <p className="text-red-400 mt-2 text-sm">
+              المرجو إدخال رقم مغربي صحيح
+            </p>
+          )}
         </div>
 
-        <div className=" max-w-md space-y-4">
+        <div className="max-w-md space-y-4">
           <button
             onClick={onNext}
-            disabled={!phoneNumber.trim()}
+            disabled={!isValidMoroccan}
             className="w-full bg-cyan-400 text-slate-900 font-bold py-4 px-6 rounded-lg hover:bg-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
           >
             سجّلني
           </button>
-          
           <button
             onClick={() => setShowSkipMessage(true)}
             className="w-full text-cyan-400 font-medium py-2 hover:text-cyan-300 transition-colors underline"
           >
-            ماشي ديالك [تجاوز]
+            ماشي دبا [تجاوز]
           </button>
         </div>
 
@@ -511,7 +536,6 @@ export default function PollApp() {
   };
 
   const handlePhoneNext = () => {
-    // Save to Firebase here with phone number
     saveResponsesToFirebase();
     setCurrentPage('thank-you');
   };
@@ -548,7 +572,6 @@ export default function PollApp() {
     
     console.log('Data to save:', dataToSave);
     
-    // Save to your existing "user" collection - each survey gets unique document ID
     const docRef = await addDoc(collection(db, "users"), dataToSave);
     
     console.log("User survey saved with ID:", docRef.id);
@@ -558,13 +581,6 @@ export default function PollApp() {
   }
 
 
-    // // Firebase save logic will go here
-    // const dataToSave = {
-    //   responses: responses,
-    //   phoneNumber: phoneNumber || null,
-    //   timestamp: new Date().toISOString()
-    // };
-    // console.log('data to save it in firebase hhhhh :', dataToSave);
   };
 
   const getCurrentAnswer = () => {

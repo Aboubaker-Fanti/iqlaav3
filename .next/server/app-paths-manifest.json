@@ -1,0 +1,5 @@
+{
+  "/api/verify-captcha/route": "app/api/verify-captcha/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}
