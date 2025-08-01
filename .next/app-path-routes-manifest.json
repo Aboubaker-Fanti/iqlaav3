@@ -1,0 +1,7 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/verify-captcha/route": "/api/verify-captcha",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/responses/page": "/responses"
+}
