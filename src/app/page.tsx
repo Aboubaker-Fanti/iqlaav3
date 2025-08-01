@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Share2, CheckCircle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Share2 } from 'lucide-react';
 import CustomRecaptcha from "@/components/MyRecaptcha";
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/app/api/firebase/firebase';
 
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import Image from 'next/image';
 interface PollQuestion {
   id: string;
   question: string;
-  type: 'multiple_choice' | 'text_input';
+  type: string;
   options?: string[];
 }
 
@@ -19,113 +19,8 @@ interface PollResponse {
   answer: string;
 }
 
-// Sample poll data
-const pollData = {
-  title: "استطلاع الرأي العام",
-  description: "شاركنا رأيك في هذا الاستطلاع القصير",
-  questions: [
-    {
-      id: "1",
-      question: "واش كتكمي؟",
-      type: "multiple_choice" as const,
-      options: ["اه", "مرة مرة"]
-    },
-    {
-      id: "2",
-      question: "عندك بلية اخرى من غير الكارو؟",
-      type: "multiple_choice" as const,
-      options: ["اه", "لا"]
-    },
-    {
-      id: "3",
-      question: "شحال من كارو فالنهار؟",
-      type: "multiple_choice" as const,
-      options: [ "كل مرة واشنو ", "اكثر من 5 فالنهاره", "أقل من 5 فالنهار"]
-    },    
-    {
-      id: "4",
-      question: "باش كايعجبك دوز؟",
-      type: "multiple_choice" as const,
-      options: [ "كوكة", "قهوة", "أتاي"]
-    },   
-    {
-      id: "5",
-      question: " اشمن نوع ديال السجارة كتستعمل؟",
-      type: "multiple_choice" as const,
-      options: [ "السجارة الإلكترونية", "السجارة العادية"]
-    },
-    {
-      id: "6",
-      question: "شحال كان فعمرك ملي تبليتي؟",
-      type: "multiple_choice" as const,
-      options: [ "بعد 25 عام", "بين 18 عام و 25 عام", "أقل من 18 عام"]
-    },
-    {
-      id: "7",
-      question: "شكون لي بلاك؟",
-      type: "multiple_choice" as const,
-      options: [ "ماشي سوقك", "صحابي ", "بليت راسي"]
-    },
-    {
-      id: "8",
-      question: "اشنو لي كايخليك تكمي؟",
-      type: "multiple_choice" as const,
-      options: [ "غير شاد ستون", "الستريس", "الظروف"]
-    },
-   {
-      id: "9",
-      question: "واش كتفكر تبعد من هاذ البلية؟",
-      type: "multiple_choice" as const,
-      options: [ "مبغيتش نبعد", "مزال ممستعدش", "ديما كانفكر"]
-    },
-    {
-      id: "10",
-      question: "شحال كاتخسر دالفلوس كل نهار فهاذ البلية؟",
-      type: "multiple_choice" as const,
-      options: [ "أكثر من 150 درهم", "بين 50 درهم و 150 درهم", "أقل من 50 درهم"]
-    },
-    {
-      id: "11",
-      question: "واش الى بدلتي المحيط تقدر تبعد من البلية؟",
-      type: "multiple_choice" as const,
-      options: [ "لا", "أه"]
-    },
-    {
-      id: "12",
-      question: "واش كاتشوف راسك تقدر تعافى من هاد البلية؟",
-      type: "multiple_choice" as const,
-      options: [ "فات الفوت", "كاين أمل"]
-    },    
-    {
-      id: "13",
-      question: "واش كاتسهر؟",
-      type: "multiple_choice" as const,
-      options: [ "كنعس معا الدجاج", "بزااف", "مرة مرة"]
-    },
-    {
-      id: "14",
-      question: "واش عاجباك حالتك ونتا مبلي؟",
-      type: "multiple_choice" as const,
-      options: [ "لا", "اه"]
-    },
-   {
-      id: "15",
-      question: "واش كاتريني؟",
-      type: "multiple_choice" as const,
-      options: [ "مرة مرة", "لا", "اه"]
-    },
-    {
-      id: "16",
-      question: "اشنو تبغي تنصح الناس لي باقي متبلاوش؟",
-      type: "text_input" as const
-    },
-    {
-      id: "17",
-      question: "واش كاينا شي حاجة اخرى مأثرة عليك؟",
-      type: "text_input" as const
-    },
-  ]
-};
+// load Sample poll data from the questions.json file 
+import pollData from './questions.json'; 
 
 
 // Smoking Survey Welcome Page
@@ -167,7 +62,8 @@ const SmokingSurveyPage = ({ onNext }: { onNext: () => void }) => (
           </p>
           <button
             onClick={onNext}
-            className="w-[80%] md:w-[400px] bg-[#26CDBC] text-white font-bold py-4 px-10 rounded-lg hover:bg-red-700 transition-colors text-base md:text-lg text-center"
+            // the hover effect is red it should be cyan
+            className="w-[80%] md:w-[400px] bg-[#26CDBC] text-white font-bold py-4 px-10 rounded-lg hover:bg-green-600 transition-colors text-base md:text-lg text-center"
           >
             نبداو الاستطلاع
           </button>
@@ -255,7 +151,7 @@ const InstructionsPage = ({ onNext }: { onNext: () => void }) => {
           <button
             onClick={onNext}
             disabled={!isRobotChecked}
-            className="w-[60%] md:w-[400px] justify-center items-center flex bg-[#26CDBC] text-white font-bold py-3 md:py-4 px-6 rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xl md:text-3xl"
+            className="w-[60%] md:w-[400px] justify-center items-center flex bg-[#26CDBC] text-white font-bold py-3 md:py-4 px-6 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xl md:text-3xl"
           >
             نبدا
           </button>
@@ -309,7 +205,7 @@ const QuestionPage = ({
               className={`w-full p-4 md:p-5 rounded-lg border-2 text-right transition-colors text-sm md:text-base ${
                 answer === option
                   ? ' bg-primary bg-opacity-20 border-cyan-400'
-                  : 'border-gray-600 focus:border-red-500  '
+                  : 'border-gray-600 focus:border-cyan-500  '
               }`}
             >
               {option}
