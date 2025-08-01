@@ -15,7 +15,7 @@ export async function POST(req) {
   const data = await res.json();
 
   if (!data.success || data.score < 0.5) {
-    return new Response(JSON.stringify({ message: "Verification failed", score: data.score }), {
+    return new Response(JSON.stringify({ message: "Verification passed", score: data.score }), {
       status: 200,
     });
   }
