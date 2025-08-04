@@ -137,7 +137,7 @@ const Responses: React.FC = () => {
                         0
                       );
                       const percent = total > 0 ? (count / total) * 100 : 0;
-                      let bg_color = ["bg-blue-800","bg-teal-700", "bg-lime-700", "bg-purple-600"]; 
+                      const bg_color = ["bg-blue-800","bg-teal-700", "bg-lime-700", "bg-purple-600"]; 
 
                       return (
                         <li key={option} className="mb-1">
